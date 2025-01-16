@@ -28,7 +28,7 @@ namespace PersonalBankingAssistant
                 endpoint: config["AzureOpenai:Endpoint"],
                 apiKey: config["AzureOpenai:ApiKey"]);
 
-            builder.Plugins.AddFromType<BankingAssistant>();
+            builder.Plugins.AddFromType<BankingAPIMocks>();
 
             return builder.Build();
         }
