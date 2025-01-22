@@ -32,6 +32,45 @@ namespace PersonalBankingAssistant
 
             return builder.Build();
         }
+
+        public static async Task runChatLoop(ChatCompletionAgent agent)
+        {
+            Console.WriteLine("Welcome to your Personal Banking Assistant!");
+            ChatHistory history = [];
+
+            // Run main console interaction loop
+            bool isComplete = false;
+            do
+            {
+                Console.WriteLine();
+                Console.Write("> ");
+                string input = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    continue;
+                }
+                if (input.Trim().Equals("EXIT", StringComparison.OrdinalIgnoreCase))
+                {
+                    isComplete = true;
+                    break;
+                }
+
+                history.Add(new ChatMessageContent(AuthorRole.User, input));
+
+                Console.WriteLine("");
+
+                // Output AI Agent response
+                // InnerException	{"HTTP 500 (model_error: )\r\n\r\nThe model produced invalid content. Consider modifying your prompt if you are seeing this error persistently."}	System.Exception {System.ClientModel.ClientResultException}
+
+                await foreach (ChatMessageContent response in agent.InvokeAsync(history))
+                {
+                    Console.WriteLine($">> {response.Content}");
+                    history.Add(new ChatMessageContent(AuthorRole.System, response.Content));
+
+                }
+            } while (!isComplete);
+        }
+
         public static async Task Main(string[] args)
         {
             Console.WriteLine("Launching Personal Banking Assistant...");
@@ -58,40 +97,7 @@ namespace PersonalBankingAssistant
                  )
             };
 
-            Console.WriteLine("Welcome to your Personal Banking Assistant!");
-
-            ChatHistory history = [];
-
-            // Run main console interaction loop
-            bool isComplete = false;
-            do
-            {
-                Console.WriteLine();
-                Console.Write("> ");
-                string input = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    continue;
-                }
-                if (input.Trim().Equals("EXIT", StringComparison.OrdinalIgnoreCase))
-                {
-                    isComplete = true;
-                    break;
-                }
-
-                history.Add(new ChatMessageContent(AuthorRole.User, input));
-
-                Console.WriteLine("");
-
-                // Output AI Agent response
-                await foreach (ChatMessageContent response in agent.InvokeAsync(history))
-                {
-                    Console.WriteLine($">> {response.Content}");
-                    history.Add(new ChatMessageContent(AuthorRole.System, response.Content));
-
-                }
-            } while (!isComplete);
-
+            await runChatLoop(agent);
         }
     }
 

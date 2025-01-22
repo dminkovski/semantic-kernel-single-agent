@@ -8,6 +8,9 @@
   </PropertyGroup>
 
 <ItemGroup>
+	<Content Include="appsettings.sample.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
 	<Content Include="appsettings.json">
 		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
